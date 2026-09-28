@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keynes-labben</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --surface2:#eef2f6; --ink:#16202b; --muted:#5a6675; --line:#d6dce3;
+  --accent:#1d5fa6; --accent-soft:#d7e5f5; --old:#8c97a4; --shock:#c4561d; --shock-soft:#f6e1d4;
+  --good:#2d7a4c; --bad:#b1352c;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f141a; --surface:#171e27; --surface2:#1e2731; --ink:#e5eaf0; --muted:#9ba7b4; --line:#2b3642;
+    --accent:#6ea8e8; --accent-soft:#1d3350; --old:#6f7b89; --shock:#e38b52; --shock-soft:#3d2719;
+    --good:#5cc08a; --bad:#ef7d72; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f141a; --surface:#171e27; --surface2:#1e2731; --ink:#e5eaf0; --muted:#9ba7b4; --line:#2b3642;
+  --accent:#6ea8e8; --accent-soft:#1d3350; --old:#6f7b89; --shock:#e38b52; --shock-soft:#3d2719;
+  --good:#5cc08a; --bad:#ef7d72; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans);padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:1180px;margin:0 auto}
+header.top{padding-block:28px 18px;display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px 24px;border-bottom:1px solid var(--line)}
+h1{font-family:var(--serif);font-size:2rem;line-height:1.1;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:6px 0 0;max-width:62ch}
+nav.tabs{display:flex;gap:6px}
+nav.tabs button{font:500 14px var(--sans);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:6px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+h2{font-family:var(--serif);font-size:1.3rem;margin:0 0 4px;text-wrap:balance}
+h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 10px;font-weight:600}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:24px;margin-top:22px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px}
+.controls{display:grid;gap:18px}
+.controls section{display:grid;gap:12px}
+.ctl{display:grid;gap:3px}
+.ctl .row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ctl label{font-weight:500;font-size:14px}
+.ctl .hint{color:var(--muted);font-size:12.5px;line-height:1.35}
+.ctl output{font-family:var(--mono);font-size:14px;min-width:4.5ch;text-align:right}
+.ctl output.pos{color:var(--good)} .ctl output.neg{color:var(--bad)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0}
+.shock input[type=range]{accent-color:var(--shock)}
+.scen{display:flex;flex-wrap:wrap;gap:6px}
+.scen button,.btn{font:500 13px var(--sans);border:1px solid var(--line);background:var(--surface2);color:var(--ink);padding:6px 10px;border-radius:5px;cursor:pointer}
+.scen button:hover,.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0f141a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0f141a}}
+.toggle{display:flex;gap:8px;align-items:flex-start;font-size:13.5px}
+.toggle input{margin-top:3px}
+
+.results{display:grid;gap:18px;position:relative}
+.headline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:620px){.headline{grid-template-columns:1fr}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.stat .lab{font-size:12.5px;color:var(--muted)}
+.stat .val{font-family:var(--mono);font-size:1.6rem;font-weight:500;line-height:1.2}
+.stat .note{font-size:12.5px;color:var(--muted)}
+.stat.key{border-color:var(--accent);background:var(--accent-soft)}
+
+.formula{overflow-x:auto}
+.eq{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;font-family:var(--mono);font-size:14.5px;white-space:nowrap;padding-block:6px}
+.frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1.25}
+.frac .n{padding:0 6px 2px}
+.frac .d{border-top:1.5px solid currentColor;padding:2px 6px 0}
+.eq .hl{color:var(--accent);font-weight:500}
+.eq .sh{color:var(--shock);font-weight:500}
+.eqnote{color:var(--muted);font-size:13px;margin-top:6px}
+
+.charts{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px}
+@media (max-width:1100px){.charts{grid-template-columns:1fr}}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+svg .t-ink{fill:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:18px;height:0;border-top:2.5px solid;vertical-align:middle;margin-right:5px}
+.playrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.playrow .num{color:var(--muted);font-size:13px}
+
+.leak .bar{display:flex;height:34px;border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+.leak .seg{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;min-width:0;padding:0 4px}
+.leak .caption{font-size:13px;color:var(--muted);margin:10px 0 6px}
+.leak .caption:first-child{margin-top:0}
+.explain{font-size:14.5px;max-width:70ch}
+.explain p{margin:0 0 8px}
+
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td.num{font-family:var(--mono)}
+td .def{display:block;color:var(--muted);font-size:12px}
+tr.sum td{font-weight:600}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+
+.veil{position:absolute;inset:0;z-index:5;display:flex;align-items:flex-start;justify-content:center;padding-top:60px;background:color-mix(in srgb,var(--bg) 55%,transparent);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);border-radius:8px}
+.veil .card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px;max-width:420px;width:calc(100% - 32px);display:grid;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.veil input{font:500 16px var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);width:9em}
+.feedback{font-size:14px;border-left:3px solid var(--accent);padding:6px 10px;background:var(--surface2);border-radius:0 5px 5px 0}
+
+.model dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:13.5px}
+.model dt{font-family:var(--mono)} .model dd{margin:0;color:var(--muted)}
+.warn{background:var(--shock-soft);border:1px solid var(--shock);border-radius:6px;padding:10px 12px;font-size:14px}
+
+/* Oppgaver */
+.tasks{max-width:820px;margin:26px auto 0;display:grid;gap:18px}
+.task{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px}
+.task .head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.task h2{font-size:1.15rem}
+.task ol{padding-left:1.3em;margin:8px 0}
+.task li{margin-bottom:6px}
+details.fasit{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+details.fasit summary{cursor:pointer;font-weight:500;color:var(--accent)}
+details.fasit div{margin-top:8px;font-size:14.5px}
+details.fasit p{margin:0 0 8px}
+.intro{max-width:820px;margin:22px auto 0;color:var(--muted)}
+footer{margin-top:40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:12px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div>
+    <h1>Keynes-labben</h1>
+    <p class="sub">Keynes-modellen for en åpen økonomi. Endre etterspørselen eller modellens parametere og se hvordan produksjonen, statsbudsjettet og handelsbalansen svarer.</p>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-sim" aria-selected="true" aria-controls="view-sim">Simulator</button>
+    <button role="tab" id="tab-opp" aria-selected="false" aria-controls="view-opp">Oppgaver</button>
+  </nav>
+</header>
+
+<main id="view-sim">
+<div class="layout">
+  <aside class="panel controls" aria-label="Innstillinger">
+    <section>
+      <h3>1 · Velg et sjokk</h3>
+      <div class="scen" id="scenarios">
+        <button data-s='{"G":10}'>Staten kjøper mer (+10)</button>
+        <button data-s='{"zT":-10}'>Skattelette (−10)</button>
+        <button data-s='{"X":-20}'>Eksportfall (−20)</button>
+        <button data-s='{"G":10,"zT":10}'>Skattefinansiert G (+10/+10)</button>
+        <button data-s='{"zI":15}'>Investeringsboom (+15)</button>
+        <button data-s='{"zc":-10}'>Husholdningene sparer mer (−10)</button>
+      </div>
+    </section>
+    <section class="shock" id="shocks">
+      <h3>… eller lag ditt eget (endring i mrd. kr)</h3>
+    </section>
+    <section id="params">
+      <h3>2 · Modellens parametere</h3>
+    </section>
+    <section>
+      <label class="toggle"><input type="checkbox" id="predict"> <span>Gjett først: skjul svaret til jeg har gjettet på ΔY</span></label>
+      <div><button class="btn" id="reset">Nullstill alt</button></div>
+    </section>
+  </aside>
+
+  <div class="results" id="results">
+    <div class="veil" id="veil" hidden>
+      <div class="card">
+        <strong>Hva tror du skjer med Y?</strong>
+        <span style="font-size:14px;color:var(--muted)">Bruk multiplikatoren og skriv inn din gjetning for endringen i produksjonen (ΔY, mrd. kr).</span>
+        <form id="guessForm" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label for="guess" style="font-family:var(--mono)">ΔY =</label>
+          <input id="guess" type="text" inputmode="decimal" autocomplete="off" placeholder="f.eks. 12,5">
+          <button class="btn primary" type="submit">Vis svaret</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="unstable" class="warn" hidden>Med disse parameterne er nevneren i multiplikatoren null eller negativ. Hver runde gir da mer ny etterspørsel enn den forrige, og modellen har ingen likevekt. Senk c₁ eller b₁, eller øk t eller a.</div>
+    <div id="feedback" class="feedback" hidden></div>
+
+    <div class="headline">
+      <div class="stat"><div class="lab">Produksjon før → etter (Y)</div><div class="val" id="h-y">–</div><div class="note">mrd. kr</div></div>
+      <div class="stat key"><div class="lab">Endring i produksjon (ΔY)</div><div class="val" id="h-dy">–</div><div class="note" id="h-dy-note"></div></div>
+      <div class="stat"><div class="lab">Multiplikator</div><div class="val" id="h-m">–</div><div class="note" id="h-m-note"></div></div>
+    </div>
+
+    <div class="panel formula">
+      <h3>Regnestykket</h3>
+      <div class="eq" id="eq1"></div>
+      <div class="eq" id="eq2"></div>
+      <div class="eqnote">Den første brøken er multiplikatoren. Parentesen er den direkte endringen i etterspørselen, altså første runde.</div>
+    </div>
+
+    <div class="charts">
+      <div class="panel">
+        <h3>Keynes-krysset</h3>
+        <div id="cross"></div>
+        <div class="legend">
+          <span><i style="border-color:var(--ink)"></i>45°-linjen: Z = Y</span>
+          <span><i style="border-color:var(--old);border-top-style:dashed"></i>Etterspørsel før</span>
+          <span><i style="border-color:var(--accent)"></i>Etterspørsel etter</span>
+          <span><i style="border-color:var(--shock)"></i>Multiplikatorprosessen</span>
+        </div>
+        <p class="eqnote">Figuren viser et utsnitt rundt likevekten, slik at endringen blir synlig.</p>
+      </div>
+      <div class="panel">
+        <h3>Runde for runde</h3>
+        <div id="rounds"></div>
+        <div class="playrow">
+          <button class="btn primary" id="play">▶ Spill av prosessen</button>
+          <span class="num" id="roundInfo"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel leak">
+      <h3>Hvor blir det av en ekstra krone i inntekt?</h3>
+      <div id="leak"></div>
+    </div>
+
+    <div class="panel explain">
+      <h3>Hva skjer?</h3>
+      <div id="explain"></div>
+    </div>
+
+    <div class="panel tbl">
+      <h3>Før og etter</h3>
+      <table>
+        <thead><tr><th>Størrelse</th><th>Før</th><th>Etter</th><th>Endring</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel model">
+      <h3>Modellen (Holden)</h3>
+      <dl>
+        <dt>Y = C + I + G + X − Q</dt><dd>Produksjon = samlet etterspørsel etter norske varer</dd>
+        <dt>C = z<sub>C</sub> + c₁(Y − T)</dt><dd>Konsum avhenger av disponibel inntekt</dd>
+        <dt>T = tY + z<sub>T</sub></dt><dd>Nettoskatt; z<sub>T</sub> er skattenivået som ikke avhenger av inntekten</dd>
+        <dt>I = z<sub>I</sub> + b₁Y</dt><dd>Realinvesteringer øker med produksjonen</dd>
+        <dt>Q = aY</dt><dd>Import</dd>
+        <dt>G, X</dt><dd>Offentlig kjøp av varer og tjenester, og eksport, er eksogene</dd>
+      </dl>
+      <p class="eqnote">Tallene er for en tenkt økonomi og er valgt for å gi enkle regnestykker. Utgangspunktet er z<sub>C</sub> = 150, z<sub>I</sub> = 80, G = 350, X = 300 og z<sub>T</sub> = 0 (mrd. kr).</p>
+    </div>
+  </div>
+</div>
+</main>
+
+<main id="view-opp" hidden>
+  <p class="intro">Løs oppgavene i rekkefølge. Knappen «Åpne i simulatoren» setter inn riktig sjokk og nullstiller parameterne til utgangspunktet (c₁ = 0,6, t = 0,3, b₁ = 0,1, a = 0,22). Regn gjerne ut svaret for hånd før du sjekker det.</p>
+  <div class="tasks" id="tasks"></div>
+</main>
+
+<footer class="wrap">Laget for MAO2100 Makroøkonomi. Modellen følger notasjonen i Holden, <i>Makroøkonomi</i>. Alle tall er i mrd. kr.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const BASE = {c1:0.6, t:0.3, b1:0.1, a:0.22, zc:150, zI:80, G:350, X:300, zT:0};
+const PARAMS = [
+  {k:"c1", lab:"Konsumtilbøyelighet c₁", hint:"Andel av en ekstra krone disponibel inntekt som brukes", min:0.3, max:0.9, step:0.01},
+  {k:"t",  lab:"Skattesats t", hint:"Andel av en ekstra krone inntekt som går til staten", min:0, max:0.6, step:0.01},
+  {k:"b1", lab:"Investeringsfølsomhet b₁", hint:"Ekstra investeringer per krone økt produksjon", min:0, max:0.2, step:0.01},
+  {k:"a",  lab:"Importtilbøyelighet a", hint:"Andel av en ekstra krone inntekt som går til import", min:0, max:0.5, step:0.01}
+];
+const SHOCKS = [
+  {k:"G",  lab:"Offentlig kjøp, ΔG", hint:"Staten kjøper flere varer og tjenester"},
+  {k:"zT", lab:"Skattenivå, Δz_T", hint:"Positiv = skatteøkning, negativ = skattelette"},
+  {k:"X",  lab:"Eksport, ΔX", hint:"F.eks. lavere etterspørsel fra utlandet"},
+  {k:"zI", lab:"Investeringer, Δz_I", hint:"Bedriftene blir mer eller mindre optimistiske"},
+  {k:"zc", lab:"Konsum, Δz_C", hint:"Husholdningene blir mer eller mindre optimistiske"}
+];
+const ROUNDS = 8;
+
+let st = freshState();
+let roundsShown = ROUNDS, timer = null, guessed = null, needGuess = false;
+
+function freshState(){ return {p:{c1:BASE.c1,t:BASE.t,b1:BASE.b1,a:BASE.a}, d:{G:0,zT:0,X:0,zI:0,zc:0}}; }
+
+// ---------- formatting ----------
+const nf = (d)=> new Intl.NumberFormat("nb-NO",{minimumFractionDigits:d,maximumFractionDigits:d});
+function f(x,d=1){ if(Math.abs(x)<0.5*Math.pow(10,-d)) x=0; return nf(d).format(x).replace("-","−"); }
+function fs(x,d=1){ if(Math.abs(x)<0.5*Math.pow(10,-d)) return f(0,d); return (x>0?"+":"")+f(x,d); }
+function p2(x){ return f(x,2); }
+function cls(x){ return x>0.05?"pos":(x<-0.05?"neg":""); }
+
+// ---------- model ----------
+function solve(p, ex){
+  const den = 1 - p.c1*(1-p.t) - p.b1 + p.a;
+  const A = ex.zc - p.c1*ex.zT + ex.zI + ex.G + ex.X;
+  const Y = A/den, T = p.t*Y + ex.zT, C = ex.zc + p.c1*(Y-T), I = ex.zI + p.b1*Y, Q = p.a*Y;
+  return {den, A, Y, T, C, I, Q, G:ex.G, X:ex.X, S:Y-T-C, B:T-ex.G, NX:ex.X-Q, m:1/den, k:1-den};
+}
+function compute(){
+  const ex0 = {zc:BASE.zc, zI:BASE.zI, G:BASE.G, X:BASE.X, zT:BASE.zT};
+  const ex1 = {}; for(const k in ex0) ex1[k] = ex0[k] + st.d[k];
+  return {r0:solve(st.p,ex0), r1:solve(st.p,ex1)};
+}
+
+// ---------- controls ----------
+function mkCtl(host, def, val, isShock){
+  const id = (isShock?"d-":"p-")+def.k;
+  const w = document.createElement("div"); w.className="ctl";
+  const min = isShock?-50:def.min, max = isShock?50:def.max, step = isShock?1:def.step;
+  w.innerHTML = `<div class="row"><label for="${id}">${def.lab.replace("_T","<sub>T</sub>").replace("_I","<sub>I</sub>").replace("_C","<sub>C</sub>")}</label><output id="${id}-o" for="${id}"></output></div>
+    <input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}">
+    <div class="hint">${def.hint}</div>`;
+  host.appendChild(w);
+  const inp = w.querySelector("input");
+  inp.addEventListener("input", ()=>{
+    const v = parseFloat(inp.value);
+    if(isShock) st.d[def.k]=v; else st.p[def.k]=v;
+    changed();
+  });
+}
+SHOCKS.forEach(s=>mkCtl(document.getElementById("shocks"), s, 0, true));
+PARAMS.forEach(s=>mkCtl(document.getElementById("params"), s, BASE[s.k], false));
+
+function syncControls(){
+  SHOCKS.forEach(s=>{ const i=document.getElementById("d-"+s.k); i.value=st.d[s.k];
+    const o=document.getElementById("d-"+s.k+"-o"); o.textContent=fs(st.d[s.k],0); o.className=cls(s.k==="zT"?-st.d[s.k]:st.d[s.k]); });
+  PARAMS.forEach(s=>{ const i=document.getElementById("p-"+s.k); i.value=st.p[s.k];
+    document.getElementById("p-"+s.k+"-o").textContent=p2(st.p[s.k]); });
+}
+
+document.querySelectorAll("#scenarios button").forEach(b=>b.addEventListener("click",()=>{
+  st.d = {G:0,zT:0,X:0,zI:0,zc:0}; Object.assign(st.d, JSON.parse(b.dataset.s));
+  syncControls(); changed(true);
+}));
+document.getElementById("reset").addEventListener("click",()=>{ st=freshState(); syncControls(); changed(); });
+document.getElementById("predict").addEventListener("change",(e)=>{ needGuess = e.target.checked && hasShock(); guessed=null; render(); });
+document.getElementById("guessForm").addEventListener("submit",(e)=>{
+  e.preventDefault();
+  const v = parseFloat(document.getElementById("guess").value.replace(/\s/g,"").replace(",",".").replace("−","-"));
+  if(isNaN(v)) { document.getElementById("guess").focus(); return; }
+  guessed = v; needGuess=false; render(); play();
+});
+function hasShock(){ return Object.values(st.d).some(v=>v!==0); }
+
+function changed(animate){
+  stopPlay(); roundsShown = ROUNDS;
+  const pred = document.getElementById("predict").checked;
+  needGuess = pred && hasShock(); guessed = null;
+  if(needGuess){ document.getElementById("guess").value=""; }
+  render();
+  if(animate && !pred) play();
+}
+
+// ---------- play ----------
+function stopPlay(){ if(timer){ clearInterval(timer); timer=null; } }
+function play(){
+  stopPlay();
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){ roundsShown=ROUNDS; render(); return; }
+  roundsShown = 0; render();
+  timer = setInterval(()=>{ roundsShown++; render(); if(roundsShown>=ROUNDS) stopPlay(); }, 650);
+}
+document.getElementById("play").addEventListener("click", play);
+
+// ---------- render ----------
+function render(){
+  syncControls();
+  const {r0,r1} = compute();
+  const unstable = r0.den <= 0.02;
+  document.getElementById("unstable").hidden = !unstable;
+  document.getElementById("veil").hidden = !needGuess || unstable;
+  if(unstable){ ["h-y","h-dy","h-m"].forEach(i=>document.getElementById(i).textContent="–"); return; }
+
+  const dA = r1.A - r0.A, dY = r1.Y - r0.Y, m = r0.m, k = r0.k, p = st.p, d = st.d;
+
+  // feedback on guess
+  const fb = document.getElementById("feedback");
+  if(guessed!==null && hasShock()){
+    const err = guessed - dY, rel = Math.abs(dY)>0.01 ? Math.abs(err)/Math.abs(dY) : 0;
+    let msg = rel<0.03 ? "Riktig. " : rel<0.2 ? "Nesten. " : "Ikke helt. ";
+    msg += `Du gjettet ΔY = ${f(guessed)}. Riktig svar er ${f(dY)} mrd. kr.`;
+    if(rel>=0.03 && Math.abs(guessed-dA)<0.05*Math.max(1,Math.abs(dA)) && Math.abs(m-1)>0.02) msg += " Du har tatt med første runde, men ikke ringvirkningene. Gang med multiplikatoren.";
+    else if(rel>=0.03 && d.zT!==0 && Math.abs(guessed-(dA-d.zT*(1-p.c1))*m) < 0.05*Math.max(1,Math.abs(dY))) msg += " Husk at en skatteendring virker via konsumet: bare c₁ av hver krone påvirker etterspørselen.";
+    fb.textContent = msg; fb.hidden=false;
+  } else fb.hidden = true;
+
+  // headline
+  document.getElementById("h-y").textContent = `${f(r0.Y,0)} → ${f(r1.Y,0)}`;
+  const hdy = document.getElementById("h-dy"); hdy.textContent = fs(dY); hdy.className = "val "+cls(dY);
+  document.getElementById("h-dy-note").textContent = Math.abs(dA)>1e-9 ? `mrd. kr, derav ${fs(dA)} i første runde` : "mrd. kr";
+  document.getElementById("h-m").textContent = p2(m);
+  document.getElementById("h-m-note").textContent = `ΔY per krone økt etterspørsel`;
+
+  // formula
+  const parts = [];
+  const add = (v,s)=>{ if(v!==0) parts.push(`<span class="sh">${fs(v,0)}</span>${s}`); };
+  add(d.zc,""); if(d.zT!==0) parts.push(`<span>− ${p2(p.c1)}·(<span class="sh">${fs(d.zT,0)}</span>)</span>`);
+  add(d.zI,""); add(d.G,""); add(d.X,"");
+  document.getElementById("eq1").innerHTML = `ΔY = <span class="frac"><span class="n">1</span><span class="d">1 − c₁(1 − t) − b₁ + a</span></span> · (Δz<sub>C</sub> − c₁Δz<sub>T</sub> + Δz<sub>I</sub> + ΔG + ΔX)`;
+  document.getElementById("eq2").innerHTML = `ΔY = <span class="frac"><span class="n">1</span><span class="d">1 − ${p2(p.c1)}·(1 − ${p2(p.t)}) − ${p2(p.b1)} + ${p2(p.a)}</span></span> · (${parts.length?parts.join(" "):"0"}) = <span class="hl">${p2(m)}</span> · ${f(dA,2)} = <span class="hl">${fs(dY,2)}</span>`;
+
+  drawCross(r0,r1,dA,k);
+  drawRounds(dA,k,dY);
+  drawLeak(p,k);
+  writeExplain(r0,r1,dA,dY,m,k);
+  writeTable(r0,r1);
+}
+
+// ---------- charts ----------
+function niceStep(range){ const raw=range/5, mag=Math.pow(10,Math.floor(Math.log10(raw))), n=raw/mag; return (n<1.5?1:n<3?2:n<7?5:10)*mag; }
+
+function drawCross(r0,r1,dA,k){
+  const W=560,H=420, L=64,R=16,T=14,B=46, pw=W-L-R, ph=H-T-B;
+  const Y0=r0.Y, Y1=r1.Y;
+  const ext=[Y0,Y1,Y0+dA];
+  let lo=Math.min(...ext), hi=Math.max(...ext);
+  const pad=Math.max((hi-lo)*0.45, 25); lo-=pad; hi+=pad;
+  const sx=v=>L+(v-lo)/(hi-lo)*pw, sy=v=>T+ph-(v-lo)/(hi-lo)*ph;
+  const Z0=y=>r0.A+k*y, Z1=y=>r1.A+k*y;
+  const step=niceStep(hi-lo); let ticks="";
+  for(let v=Math.ceil(lo/step)*step; v<=hi; v+=step){
+    ticks+=`<line x1="${sx(v)}" y1="${T}" x2="${sx(v)}" y2="${T+ph}" stroke="var(--line)" stroke-width="1"/>`+
+           `<line x1="${L}" y1="${sy(v)}" x2="${L+pw}" y2="${sy(v)}" stroke="var(--line)" stroke-width="1"/>`+
+           `<text x="${sx(v)}" y="${T+ph+18}" text-anchor="middle">${f(v,0)}</text>`+
+           `<text x="${L-8}" y="${sy(v)+4}" text-anchor="end">${f(v,0)}</text>`;
+  }
+  const line=(fn,attrs)=>`<line x1="${sx(lo)}" y1="${sy(fn(lo))}" x2="${sx(hi)}" y2="${sy(fn(hi))}" ${attrs}/>`;
+  // staircase
+  let path="", y=Y0, n=0;
+  if(Math.abs(dA)>1e-9){
+    path=`M${sx(Y0)},${sy(Y0)}`;
+    for(n=0;n<roundsShown;n++){ const z=Z1(y); path+=` L${sx(y)},${sy(z)} L${sx(z)},${sy(z)}`; y=z; }
+  }
+  const shown = Math.abs(dA)>1e-9;
+  const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Keynes-kryss med likevekt før og etter">
+    <defs><clipPath id="cp"><rect x="${L}" y="${T}" width="${pw}" height="${ph}"/></clipPath></defs>
+    ${ticks}
+    <g clip-path="url(#cp)">
+      ${line(v=>v,'stroke="var(--ink)" stroke-width="1.5"')}
+      ${line(Z0,'stroke="var(--old)" stroke-width="2" stroke-dasharray="6 5"')}
+      ${shown?line(Z1,'stroke="var(--accent)" stroke-width="2.5"'):""}
+      ${shown&&path?`<path d="${path}" fill="none" stroke="var(--shock)" stroke-width="2"/>`:""}
+      <line x1="${sx(Y0)}" y1="${sy(Y0)}" x2="${sx(Y0)}" y2="${T+ph}" stroke="var(--old)" stroke-dasharray="2 3"/>
+      ${shown?`<line x1="${sx(Y1)}" y1="${sy(Y1)}" x2="${sx(Y1)}" y2="${T+ph}" stroke="var(--accent)" stroke-dasharray="2 3"/>`:""}
+      <circle cx="${sx(Y0)}" cy="${sy(Y0)}" r="5" fill="var(--surface)" stroke="var(--old)" stroke-width="2"/>
+      ${shown?`<circle cx="${sx(Y1)}" cy="${sy(Y1)}" r="5.5" fill="var(--accent)"/>`:""}
+    </g>
+    <text class="t-ink" x="${sx(Y0)+8}" y="${sy(Y0)+(dA>=0?16:-9)}">E₀</text>
+    ${shown?`<text class="t-ink" x="${sx(Y1)-22}" y="${sy(Y1)+(dA>=0?-9:18)}">E₁</text>`:""}
+    <text x="${L+pw/2}" y="${H-6}" text-anchor="middle">Y, produksjon og inntekt (mrd. kr)</text>
+    <text transform="translate(14 ${T+ph/2}) rotate(-90)" text-anchor="middle">Z, samlet etterspørsel</text>
+  </svg>`;
+  document.getElementById("cross").innerHTML=svg;
+}
+
+function drawRounds(dA,k,dY){
+  const host=document.getElementById("rounds"), info=document.getElementById("roundInfo");
+  if(Math.abs(dA)<1e-9){
+    host.innerHTML=`<p class="eqnote" style="margin:40px 0">Velg et sjokk for å se multiplikatorprosessen.</p>`;
+    info.textContent=""; return;
+  }
+  const W=460,H=340,L=52,R=12,T=16,B=40, pw=W-L-R, ph=H-T-B;
+  const inc=[], cum=[]; let c=0;
+  for(let i=0;i<ROUNDS;i++){ const v=dA*Math.pow(k,i); inc.push(v); c+=v; cum.push(c); }
+  const vals=[0,dY,...inc,...cum]; let lo=Math.min(...vals), hi=Math.max(...vals);
+  const pad=(hi-lo)*0.08; lo-= (lo<0?pad:0); hi+=(hi>0?pad:0);
+  const sy=v=>T+ph-(v-lo)/(hi-lo)*ph, bw=pw/ROUNDS;
+  const step=niceStep(hi-lo); let g="";
+  for(let v=Math.ceil(lo/step)*step; v<=hi+1e-9; v+=step){
+    g+=`<line x1="${L}" y1="${sy(v)}" x2="${L+pw}" y2="${sy(v)}" stroke="var(--line)"/><text x="${L-6}" y="${sy(v)+4}" text-anchor="end">${f(v,Math.abs(step)<1?1:0)}</text>`;
+  }
+  let bars="", pts="", dots="";
+  for(let i=0;i<ROUNDS;i++){
+    const x=L+i*bw, on=i<roundsShown;
+    const y1=sy(Math.max(0,inc[i])), y2=sy(Math.min(0,inc[i]));
+    bars+=`<rect x="${x+bw*0.18}" y="${y1}" width="${bw*0.64}" height="${Math.max(0.5,y2-y1)}" fill="${i===0?'var(--shock)':'var(--accent)'}" opacity="${on?(i===0?0.9:0.55):0.12}"/>`;
+    bars+=`<text x="${x+bw/2}" y="${T+ph+16}" text-anchor="middle">${i+1}</text>`;
+    if(on){ pts+=`${i?" L":"M"}${x+bw/2},${sy(cum[i])}`; dots+=`<circle cx="${x+bw/2}" cy="${sy(cum[i])}" r="4" fill="var(--accent)"/>`; }
+  }
+  const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Endring i produksjon per runde">
+    ${g}
+    <line x1="${L}" y1="${sy(0)}" x2="${L+pw}" y2="${sy(0)}" stroke="var(--muted)"/>
+    <line x1="${L}" y1="${sy(dY)}" x2="${L+pw}" y2="${sy(dY)}" stroke="var(--ink)" stroke-dasharray="5 4"/>
+    <text class="t-ink" x="${L+pw-4}" y="${sy(dY)+(dY>=0?-6:14)}" text-anchor="end">samlet ΔY = ${f(dY)}</text>
+    ${bars}
+    ${pts?`<path d="${pts}" fill="none" stroke="var(--accent)" stroke-width="2"/>`:""}${dots}
+    <text x="${L+pw/2}" y="${H-4}" text-anchor="middle">Runde</text>
+  </svg>`;
+  host.innerHTML=svg+`<div class="legend"><span><i style="border-color:var(--shock);border-top-width:8px"></i>Første runde (sjokket)</span><span><i style="border-color:var(--accent);border-top-width:8px;opacity:.6"></i>Ringvirkning i runden</span><span><i style="border-color:var(--accent)"></i>Akkumulert</span></div>`;
+  const r=Math.min(roundsShown,ROUNDS);
+  info.textContent = r===0 ? "Klar" : `Etter ${r} ${r===1?"runde":"runder"}: ${f(cum[r-1])} av ${f(dY)} (${f(100*cum[r-1]/dY,0)} %)`;
+}
+
+function drawLeak(p,k){
+  const tax=p.t, sav=(1-p.c1)*(1-p.t), cons=p.c1*(1-p.t);
+  const seg=(w,col,txt,title)=>`<div class="seg" style="flex:${Math.max(w,0)} 1 0;background:${col}" title="${title}">${w>=0.07?txt:""}</div>`;
+  const row1 = seg(cons,"var(--accent)",`Konsum ${p2(cons)}`,"Konsum c₁(1−t)")+seg(sav,"#7c8794",`Sparing ${p2(sav)}`,"Sparing (1−c₁)(1−t)")+seg(tax,"#9a6b3f",`Skatt ${p2(tax)}`,"Skatt t");
+  const tot=cons+p.b1;
+  const row2 = seg(Math.max(k,0),"var(--accent)",`Norske varer ${p2(k)}`,"Ny etterspørsel etter norske varer")+seg(Math.min(p.a,tot),"#6b5b95",`Import ${p2(p.a)}`,"Import a");
+  document.getElementById("leak").innerHTML=`
+    <p class="caption">Av 1 krone ekstra inntekt går ${p2(tax)} til skatt, ${p2(sav)} til sparing og ${p2(cons)} til konsum:</p>
+    <div class="bar">${row1}</div>
+    <p class="caption">Konsumet (${p2(cons)}) pluss ekstra investeringer (b₁ = ${p2(p.b1)}) er ${p2(tot)}. Av dette går ${p2(p.a)} til import, og ${p2(k)} blir ny etterspørsel etter norske varer i neste runde:</p>
+    <div class="bar">${row2}</div>
+    <p class="caption">Hver runde er derfor ${p2(k)} ganger den forrige. Lekkasjene (skatt, sparing og import) er grunnen til at prosessen stopper opp.</p>`;
+}
+
+function writeExplain(r0,r1,dA,dY,m,k){
+  const d=st.d, p=st.p, el=document.getElementById("explain");
+  if(!hasShock()){ el.innerHTML=`<p>Ingen sjokk er valgt, så økonomien er i utgangspunktet: Y = ${f(r0.Y,1)} mrd. kr. Velg et sjokk til venstre, eller endre parameterne for å se hvordan multiplikatoren endrer seg (nå ${p2(m)}).</p>`; return; }
+  const out=[];
+  const src=[];
+  if(d.G) src.push(`staten kjøper for ${f(Math.abs(d.G),0)} mrd. kr ${d.G>0?"mer":"mindre"}`);
+  if(d.X) src.push(`eksporten ${d.X>0?"øker":"faller"} med ${f(Math.abs(d.X),0)}`);
+  if(d.zI) src.push(`investeringene ${d.zI>0?"øker":"faller"} med ${f(Math.abs(d.zI),0)}`);
+  if(d.zc) src.push(`husholdningene ${d.zc>0?"øker":"reduserer"} konsumet med ${f(Math.abs(d.zc),0)}`);
+  if(d.zT) src.push(`skattene ${d.zT>0?"øker":"reduseres"} med ${f(Math.abs(d.zT),0)}, slik at konsumet ${d.zT>0?"faller":"øker"} med ${p2(p.c1)} · ${f(Math.abs(d.zT),0)} = ${f(Math.abs(p.c1*d.zT),1)}`);
+  out.push(`<p><b>Første runde.</b> ${cap(src.join("; "))}. Til sammen ${dA>=0?"øker":"faller"} etterspørselen etter norske varer direkte med ${f(Math.abs(dA))} mrd. kr, og bedriftene ${dA>=0?"øker":"reduserer"} produksjonen like mye.</p>`);
+  if(d.zT && d.G && Math.abs(d.zT-d.G)<1e-9) out.push(`<p>Legg merke til at skatten virker svakere enn offentlig kjøp. Staten bruker hele beløpet på norske varer, mens husholdningene bare ville brukt ${p2(p.c1)} av hver krone de betaler i skatt.</p>`);
+  out.push(`<p><b>Ringvirkningene.</b> Høyere produksjon betyr høyere inntekt. Av hver ekstra krone blir ${p2(k)} ny etterspørsel etter norske varer, så neste runde er ${f(Math.abs(dA*k))}, runden etter ${f(Math.abs(dA*k*k))}, og så videre. Summen av alle rundene er ${f(Math.abs(dA))} · ${p2(m)} = ${f(Math.abs(dY))} mrd. kr.</p>`);
+  const dT=r1.T-r0.T, dB=r1.B-r0.B, dNX=r1.NX-r0.NX;
+  out.push(`<p><b>Statsbudsjettet.</b> Skatteinntektene ${dT>=0?"øker":"faller"} med ${f(Math.abs(dT))}${d.zT?` (${fs(d.zT,0)} fra skattenivået og ${fs(p.t*dY)} fordi inntektene endres)`:` fordi inntektene endres`}. Budsjettbalansen T − G ${dB>=0?"bedres":"svekkes"} med ${f(Math.abs(dB))} mrd. kr${d.G||d.zT?"":", selv om staten ikke har gjort noe. Dette kalles automatiske stabilisatorer"}.</p>`);
+  out.push(`<p><b>Handelsbalansen.</b> Importen ${r1.Q>=r0.Q?"øker":"faller"} med ${f(Math.abs(r1.Q-r0.Q))} (a · ΔY). Handelsbalansen X − Q ${dNX>=0?"bedres":"svekkes"} med ${f(Math.abs(dNX))} mrd. kr.</p>`);
+  el.innerHTML=out.join("");
+}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function writeTable(r0,r1){
+  const rows=[
+    ["Produksjon, Y","",r0.Y,r1.Y,true],
+    ["Konsum, C","z<sub>C</sub> + c₁(Y − T)",r0.C,r1.C],
+    ["Investering, I","z<sub>I</sub> + b₁Y",r0.I,r1.I],
+    ["Offentlig kjøp, G","eksogen",r0.G,r1.G],
+    ["Eksport, X","eksogen",r0.X,r1.X],
+    ["Import, Q","aY",r0.Q,r1.Q],
+    ["Nettoskatt, T","tY + z<sub>T</sub>",r0.T,r1.T],
+    ["Budsjettbalanse, T − G","+ = overskudd",r0.B,r1.B,true],
+    ["Handelsbalanse, X − Q","+ = overskudd",r0.NX,r1.NX,true],
+    ["Privat sparing, Y − T − C","",r0.S,r1.S]
+  ];
+  document.getElementById("tbody").innerHTML=rows.map(r=>{
+    const dd=r[3]-r[2];
+    return `<tr class="${r[4]?"sum":""}"><td>${r[0]}${r[1]?`<span class="def">${r[1]}</span>`:""}</td><td class="num">${f(r[2])}</td><td class="num">${f(r[3])}</td><td class="num ${cls(dd)}">${fs(dd)}</td></tr>`;
+  }).join("");
+}
+
+// ---------- tabs ----------
+function show(which){
+  const sim=which==="sim";
+  document.getElementById("view-sim").hidden=!sim; document.getElementById("view-opp").hidden=sim;
+  document.getElementById("tab-sim").setAttribute("aria-selected",sim); document.getElementById("tab-opp").setAttribute("aria-selected",!sim);
+  try{ localStorage.setItem("keynes-tab",which); }catch(e){}
+}
+document.getElementById("tab-sim").addEventListener("click",()=>show("sim"));
+document.getElementById("tab-opp").addEventListener("click",()=>show("opp"));
+
+// ---------- oppgaver ----------
+const TASKS = [
+ {t:"Oppgave 1 · Staten kjøper mer", s:{G:10},
+  q:[`Staten øker kjøpet av varer og tjenester med 10 mrd. kr (ΔG = 10). Regn ut multiplikatoren og ΔY for hånd før du åpner simulatoren. Slå gjerne på «Gjett først».`,
+     `Hvorfor øker produksjonen med mer enn 10 mrd. kr?`,
+     `Hvor mye øker konsumet, importen og skatteinntektene? Blir statsbudsjettet svekket med hele 10 mrd. kr?`],
+  a:`<p>Multiplikatoren er 1 / (1 − 0,6·0,7 − 0,1 + 0,22) = 1 / 0,70 ≈ 1,43. Da blir ΔY = 1,43 · 10 ≈ <b>14,3 mrd. kr</b>.</p>
+     <p>Produksjonen øker mer enn 10 fordi høyere produksjon gir høyere inntekt. Husholdningene bruker en del av inntekten på konsum, og bedriftene investerer mer. Det gir nye runder med etterspørsel.</p>
+     <p>ΔC = c₁(1 − t)·ΔY = 0,42 · 14,3 ≈ 6,0. ΔQ = 0,22 · 14,3 ≈ 3,1. ΔT = 0,3 · 14,3 ≈ 4,3. Budsjettbalansen svekkes derfor bare med 10 − 4,3 ≈ <b>5,7 mrd. kr</b>, fordi en del av utgiften kommer tilbake som skatt.</p>`},
+ {t:"Oppgave 2 · Runde for runde", s:{G:10},
+  q:[`Trykk «Spill av prosessen». Hvor stor er økningen i produksjonen i første, andre og tredje runde?`,
+     `Hvor mange runder tar det før vi har fått 90 % av den samlede effekten?`,
+     `Forklar med egne ord hvorfor hver runde blir mindre enn den forrige. Bruk figuren «Hvor blir det av en ekstra krone i inntekt?».`],
+  a:`<p>Rundene er 10, 3,0 og 0,9 mrd. kr. Hver runde er 0,30 ganger den forrige, fordi 1 − 0,70 = 0,30 av hver ekstra krone inntekt blir ny etterspørsel etter norske varer.</p>
+     <p>Etter to runder har vi 13,0 av 14,3, altså 91 %. Det meste av effekten kommer altså raskt.</p>
+     <p>Av en ekstra krone inntekt går 0,30 til skatt og 0,28 til sparing, mens 0,42 går til konsum. Investeringene øker med 0,10. Av disse 0,52 går 0,22 til import, og bare 0,30 blir etterspørsel etter norske varer. Skatt, sparing og import er lekkasjer ut av kretsløpet.</p>`},
+ {t:"Oppgave 3 · Skattelette eller offentlig kjøp?", s:{zT:-10},
+  q:[`Regjeringen vurderer å stimulere økonomien med en skattelette på 10 mrd. kr (Δz<sub>T</sub> = −10) i stedet for å øke G med 10. Hvor mye øker Y nå? Sammenlign med oppgave 1.`,
+     `Hvorfor gir skatteletten mindre effekt enn økte offentlige kjøp av samme størrelse?`,
+     `Hvor mye svekkes statsbudsjettet i de to tilfellene? Hvilket tiltak gir mest økt produksjon per krone svekket budsjett?`],
+  a:`<p>Første runde er bare c₁ · 10 = 6, fordi husholdningene bruker 0,6 av skatteletten og sparer resten. ΔY = 1,43 · 6 ≈ <b>8,6 mrd. kr</b>, mot 14,3 i oppgave 1.</p>
+     <p>Når staten kjøper varer, er hele beløpet etterspørsel i første runde. En skattelette gir mer disponibel inntekt, og en del av den blir spart.</p>
+     <p>Skatteletten: ΔT = −10 + 0,3 · 8,6 ≈ −7,4, så budsjettet svekkes med 7,4. Økt G: budsjettet svekkes med 5,7 (oppgave 1). Økt G gir 14,3 / 5,7 ≈ 2,5 kr økt produksjon per krone svekket budsjett. Skatteletten gir 8,6 / 7,4 ≈ 1,2 kr.</p>`},
+ {t:"Oppgave 4 · Skattefinansierte utgifter", s:{G:10,zT:10},
+  q:[`Staten øker G med 10 mrd. kr og øker samtidig skattenivået z<sub>T</sub> med 10 mrd. kr. Mange tror at dette ikke påvirker økonomien, fordi staten tar inn like mye som den bruker. Hva skjer med Y?`,
+     `Hva skjer med konsumet? Hvorfor?`,
+     `Hva skjer med budsjettbalansen? Forklar hvorfor den ikke er uendret.`],
+  a:`<p>Første runde er 10 − 0,6 · 10 = 4. ΔY = 1,43 · 4 ≈ <b>5,7 mrd. kr</b>. Produksjonen øker, fordi staten bruker hele beløpet, mens husholdningene bare ville brukt 0,6 av det de betaler i skatt.</p>
+     <p>Konsumet faller med ca. 3,6: ΔC = 0,6 · (ΔY − ΔT) = 0,6 · (5,7 − 11,7). Disponibel inntekt faller, fordi skatten øker mer enn inntekten.</p>
+     <p>ΔT = 10 + 0,3 · 5,7 ≈ 11,7, mens ΔG = 10. Budsjettet bedres med ca. 1,7 mrd. kr, fordi den høyere produksjonen gir ekstra skatteinntekter i tillegg til skatteøkningen.</p>`},
+ {t:"Oppgave 5 · Eksportfall", s:{X:-20},
+  q:[`Handelspartnerne våre går inn i en lavkonjunktur, og eksporten faller med 20 mrd. kr. Hva skjer med Y, importen og handelsbalansen?`,
+     `Hva skjer med statsbudsjettet, selv om staten ikke gjør noe? Hva kalles dette?`,
+     `Hvor mye må staten øke G for å holde produksjonen uendret? Hva skjer da med budsjettbalansen? (Bruk skyveknappen for ΔG.)`],
+  a:`<p>ΔY = 1,43 · (−20) ≈ <b>−28,6 mrd. kr</b>. Importen faller med 0,22 · 28,6 ≈ 6,3. Handelsbalansen svekkes derfor med 20 − 6,3 ≈ 13,7, altså mindre enn eksportfallet, fordi importen også faller.</p>
+     <p>Skatteinntektene faller med 0,3 · 28,6 ≈ 8,6, så budsjettbalansen svekkes med 8,6 mrd. kr uten at staten har vedtatt noe. Dette er de <b>automatiske stabilisatorene</b>. Siden skatten faller, faller disponibel inntekt mindre enn produksjonen, og det demper nedgangen.</p>
+     <p>Staten må øke G med 20, fordi G og X har samme multiplikator. Da er Y og T uendret, men budsjettbalansen svekkes med hele 20 mrd. kr.</p>`},
+ {t:"Oppgave 6 · Hva bestemmer multiplikatoren?", s:{X:-20},
+  q:[`Behold eksportfallet på 20. Øk skattesatsen t fra 0,30 til 0,40. Hva skjer med multiplikatoren og med fallet i Y? Forklar hvorfor en høyere skattesats gjør økonomien mer stabil.`,
+     `Sett t tilbake til 0,30 og øk importtilbøyeligheten a fra 0,22 til 0,40. Hva skjer med multiplikatoren nå?`,
+     `Norge er en liten, åpen økonomi med høy import. USA importerer en mye mindre del av inntekten. Hvor tror du multiplikatoren for finanspolitikk er størst? Hva betyr det for hvor effektiv finanspolitikken er i Norge?`],
+  a:`<p>Med t = 0,40 blir nevneren 1 − 0,6·0,6 − 0,1 + 0,22 = 0,76, og multiplikatoren faller til ca. 1,32. Fallet i Y blir ca. 26,3 i stedet for 28,6. En større del av inntektsfallet tas av staten gjennom lavere skatt, så husholdningene kutter mindre i konsumet. De automatiske stabilisatorene blir sterkere.</p>
+     <p>Med a = 0,40 blir nevneren 0,88, og multiplikatoren faller til ca. 1,14. Fallet i Y blir ca. 22,7. Mer av hver ekstra krone lekker ut til utlandet.</p>
+     <p>Multiplikatoren er størst i en økonomi med lav import, som USA. I Norge går en stor del av en finanspolitisk stimulans til import, så finanspolitikken har mindre effekt på norsk produksjon, men en tilsvarende større effekt på handelsbalansen. (Til gjengjeld smitter også sjokk fra utlandet mindre over på norsk produksjon enn de ellers ville gjort, fordi importen tar noe av støyten.)</p>`}
+];
+const tasksHost=document.getElementById("tasks");
+TASKS.forEach((T,i)=>{
+  const el=document.createElement("article"); el.className="task";
+  el.innerHTML=`<div class="head"><h2>${T.t}</h2><button class="btn" data-i="${i}">Åpne i simulatoren</button></div>
+    <ol type="a">${T.q.map(q=>`<li>${q}</li>`).join("")}</ol>
+    <details class="fasit"><summary>Vis løsningsforslag</summary><div>${T.a}</div></details>`;
+  el.querySelector("button").addEventListener("click",()=>{
+    st=freshState(); Object.assign(st.d,T.s); syncControls(); show("sim"); changed(true);
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+  tasksHost.appendChild(el);
+});
+
+// ---------- start ----------
+let startTab="sim";
+if(location.hash==="#oppgaver") startTab="opp";
+else { try{ startTab = localStorage.getItem("keynes-tab")||"sim"; }catch(e){} }
+st.d.G=10;   // åpne med et eksempel slik at figurene viser noe
+syncControls(); show(startTab); render();
+})();
+</script>
+</body>
+</html>
